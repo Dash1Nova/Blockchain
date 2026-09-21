@@ -3,6 +3,8 @@
 #include <fstream>
 #include <array>
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 struct Pair {
     uint64_t inputByte;
@@ -24,9 +26,9 @@ Current hashBucket(const std::vector<uint8_t>& bucket) {
         currentBucket.value[part] ^= pair.convertedByte;
 
         if (i % 2 == 0) {
-            currentBucket.value[part] = (currentBucket.value[part] << 13) | (currentBucket.value[part] << (64 - 13));
+            currentBucket.value[part] = (currentBucket.value[part] << 13) | (currentBucket.value[part] >> (64 - 13));
         } else {
-            currentBucket.value[part] = (currentBucket.value[part] << 17) | (currentBucket.value[part] << (64 - 17));
+            currentBucket.value[part] = (currentBucket.value[part] >> 17) | (currentBucket.value[part] << (64 - 17));
         }
     }
     return currentBucket;
@@ -54,7 +56,34 @@ std::vector<uint8_t> convertTextTB(const std::string& text) {
 }
 
 std::string hash(const std::vector<uint8_t>& data) {
+    Current mainState;
+    const size_t bucketSize = 8;
 
+    for (size_t i = 0; i < data.size(); i += bucketSize) {
+
+        size_t end = std::min(
+            i + bucketSize,
+            data.size()
+        );
+
+        std::vector<uint8_t> bucket(
+            data.begin() + i,
+            data.begin() + end
+        );
+        Current bucketState = hashBucket(bucket);
+
+        for (int j = 0; j < 4; j++) {
+            mainState.value[j] ^=
+                bucketState.value[j];
+        }
+    }
+    std::stringstream result;
+
+    for (int i = 3; i >= 0; i--) {
+        result << std::hex << std::setw(16) << std::setfill('0') << mainState.value[i];
+    }
+
+    return result.str();
 }
 
 
@@ -65,23 +94,24 @@ int main() {
     while (true) {
         int choice;
         
-        std::cout << "Pasirinkite, ką norėtumėte padaryti:\n";
-        std::cout << "1 - suhashuoti tekstą\n";
-        std::cout << "2 - suhashuoti failą\n";
-        std::cout << "3 - baigti darbą\n";
+        std::cout << "Pasirinkite, ka noretumete padaryti:\n";
+        std::cout << "1 - suhashuoti teksta\n";
+        std::cout << "2 - suhashuoti faila\n";
+        std::cout << "3 - baigti darba\n";
         std::cin >> choice;
+        std::cin.ignore();
         
         if (choice == 1) {
             std::string input;
-            std::cout << "Įveskite tekstą: ";
-            std::cin >> input;
+            std::cout << "Iveskite teksta: ";
+            std::getline(std::cin, input);
 
             std::vector<uint8_t> data = convertTextTB(input);
             std::string result = hash(data);
             std::cout << "Hash: " << result << "\n";
         } else if (choice == 2) {
             std::string filename;
-            std::cout << "Įveskite failo pavadinimą arba kelią iki jo: ";
+            std::cout << "Iveskite failo pavadinima arba kelia iki jo: ";
             std::getline(std::cin, filename);
 
             std::vector<uint8_t> data = readFile(filename);
