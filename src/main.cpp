@@ -4,7 +4,6 @@
 #include <array>
 #include <vector>
 #include <iomanip>
-#include <sstream>
 
 struct Pair {
     uint64_t inputByte;
@@ -56,38 +55,31 @@ std::vector<uint8_t> convertTextTB(const std::string& text) {
 }
 
 std::string hash(const std::vector<uint8_t>& data) {
-    Current mainState;
-    const size_t bucketSize = 8;
+    Current currentMain;
+    size_t bucketSize = 8;
 
     for (size_t i = 0; i < data.size(); i += bucketSize) {
-
-        size_t end = std::min(
-            i + bucketSize,
-            data.size()
-        );
-
-        std::vector<uint8_t> bucket(
-            data.begin() + i,
-            data.begin() + end
-        );
+        size_t end = std::min(i + bucketSize, data.size());
+        std::vector<uint8_t> bucket( data.begin() + i, data.begin() + end);
         Current bucketState = hashBucket(bucket);
 
         for (int j = 0; j < 4; j++) {
-            mainState.value[j] ^=
-                bucketState.value[j];
+            currentMain.value[j] ^= bucketState.value[j];
         }
     }
-    std::stringstream result;
+
+    std::string result;
+    static const char hexDigits[] = "0123456789abcdef";
+    result.reserve(64);
 
     for (int i = 3; i >= 0; i--) {
-        result << std::hex << std::setw(16) << std::setfill('0') << mainState.value[i];
+        for (int shift = 60; shift >= 0; shift -= 4) {
+            result += hexDigits[(currentMain.value[i] >> shift) & 0xF];
+        }
     }
 
-    return result.str();
+    return result;
 }
-
-
-
 
 
 int main() {
