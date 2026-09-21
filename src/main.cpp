@@ -53,45 +53,41 @@ std::vector<uint8_t> convertTextTB(const std::string& text) {
     return converted;
 }
 
+std::string hash(const std::vector<uint8_t>& data) {
 
-
-std::string hash(const std::string& input) {
-    unsigned currentValue = 0; // su tipu dar pasvarstyti
-    
-    try {
-        std::fstream file(input);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("Nepavyko atidaryti failo");
-        }
-        file.close();
-    }
-    catch () {
-
-    }
-    
-    for (size_t i = 0; i < input.size(); i++) {
-        if (i % 2 == 0) {
-           currentValue = currentValue << 5;
-        }
-        else {
-            currentValue = currentValue >> 3;
-        }
-    }
-
-    return hash;
 }
+
+
+
+
 
 int main() {
     while (true) {
-        std::string input;
+        int choice;
+        
+        std::cout << "Pasirinkite, ką norėtumėte padaryti:\n";
+        std::cout << "1 - suhashuoti tekstą\n";
+        std::cout << "2 - suhashuoti failą\n";
+        std::cout << "3 - baigti darbą\n";
+        std::cin >> choice;
+        
+        if (choice == 1) {
+            std::string input;
+            std::cout << "Įveskite tekstą: ";
+            std::cin >> input;
 
-        std::cout << "Įveskite tekstą arba kelią iki failo: ";
-        std::cin >> input;
-    
-        result = hash(input);
+            std::vector<uint8_t> data = convertTextTB(input);
+            std::string result = hash(data);
+            std::cout << "Hash: " << result << "\n";
+        } else if (choice == 2) {
+            std::string filename;
+            std::cout << "Įveskite failo pavadinimą arba kelią iki jo: ";
+            std::getline(std::cin, filename);
 
-        std::cout << "Hash: " << result << "\n";
+            std::vector<uint8_t> data = readFile(filename);
+            std::string result = hash(data);
+            std::cout << "Hash: " << result << "\n";
+        } else if (choice == 3) break;
     }
 
     return 0;
