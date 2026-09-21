@@ -14,18 +14,44 @@ struct Current {
 };
 
 Current hashBucket(const std::vector<uint8_t>& bucket) {
-    Current bucketState;
+    Current currentBucket;
     for (size_t i = 0; i < bucket.size(); i++) {
         Pair pair;
         pair.inputByte = bucket[i];
         pair.convertedByte = pair.inputByte;
 
         int part = i % 4;
-        bucketState.value[part] ^= pair.convertedByte;
+        currentBucket.value[part] ^= pair.convertedByte;
+
+        if (i % 2 == 0) {
+            currentBucket.value[part] = (currentBucket.value[part] << 13) | (currentBucket.value[part] << (64 - 13));
+        } else {
+            currentBucket.value[part] = (currentBucket.value[part] << 17) | (currentBucket.value[part] << (64 - 17));
+        }
     }
+    return currentBucket;
 }
 
+std::vector<uint8_t> readFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    std::vector<uint8_t> data;
 
+    if(!file) {
+        throw std::runtime_error("Nepavyko atidaryti failo.");
+    }
+
+    char c;
+    while (file.get(c)) {
+        data.push_back(static_cast<uint8_t>(c));
+    }
+
+    return data;
+}
+
+std::vector<uint8_t> convertTextTB(const std::string& text) {
+    std::vector<uint8_t> converted(text.begin(), text.end());
+    return converted;
+}
 
 
 
