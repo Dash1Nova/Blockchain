@@ -1,6 +1,33 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <array>
+#include <vector>
+
+struct Pair {
+    uint64_t inputByte;
+    uint64_t convertedByte;
+};
+
+struct Current {
+    std::array<uint64_t, 4> value = {0, 0, 0, 0};
+};
+
+Current hashBucket(const std::vector<uint8_t>& bucket) {
+    Current bucketState;
+    for (size_t i = 0; i < bucket.size(); i++) {
+        Pair pair;
+        pair.inputByte = bucket[i];
+        pair.convertedByte = pair.inputByte;
+
+        int part = i % 4;
+        bucketState.value[part] ^= pair.convertedByte;
+    }
+}
+
+
+
+
 
 std::string hash(const std::string& input) {
     unsigned currentValue = 0; // su tipu dar pasvarstyti
