@@ -4,18 +4,20 @@ Pseudokodas:
 
 ```text
 Hash(input):
-currentValue <- 0
-for i <- 0 to length(input) - 1:
-    do currentValue <- currenValue XOR byte
-    if position(byte) is even
-        then currentValue <- currentValue LEFT SHIFT 5
-        else currentValue <- currentValue RIGHT SHIFT 3
+    currentMain <- 0, 0, 0, 0
+    bucketSize <- 8
+    for i <- 0 to length(input) - 1 step bucketSize:
+        do end <- min(i + bucketSize, length(input))
+        do bucket <- input[i ... end - 1]
+        do bucketState <- HashBucket(bucket)
+        for j <- 0 to 3:
+            currentMain[j] <- currentMain[j] XOR bucketState[j]
     result <- ""
-
-    groups <- 256/4
-    for i <- 1 to groups:
-        do group <- 4 bits of currentValue
-    result <- result || hex(group)
-
-    return currentValue
+    hexDigits <- "0123456789abcdef"
+    reserve(result, 64)
+    for i <- 3 down to 0:
+        for shift <- 60 down to 0 step 4:
+            do nibble <- (currentMain[i] >> shift) AND 0xF
+            do result <- result || hexDigits[nibble]
+    return result
 ```
