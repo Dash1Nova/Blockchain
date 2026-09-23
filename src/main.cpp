@@ -94,7 +94,8 @@ int main(int argc, char* argv[]) {
         std::cout << "Pasirinkite, ka noretumete padaryti:\n";
         std::cout << "1 - suhashuoti teksta\n";
         std::cout << "2 - suhashuoti faila\n";
-        std::cout << "3 - baigti darba\n";
+        std::cout << "3 - ismatuoti efektyvuma\n";
+        std::cout << "4 - baigti darba\n";
         std::cin >> choice;
         std::cin.ignore();
         
@@ -118,8 +119,8 @@ int main(int argc, char* argv[]) {
             } catch (const std::exception& e) {
                 std::cerr << "Klaida: " << e.what() << "\n";
             }
-        } else if (choice == 4) timeBenchmark(hash);
-        else if (choice == 3) break;
+        } else if (choice == 3) timeBenchmark(hash);
+        else if (choice == 4) break;
     }
 
     return 0;
