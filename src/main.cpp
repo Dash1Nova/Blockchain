@@ -3,6 +3,7 @@
 #include <fstream>
 #include <array>
 #include <vector>
+#include "time_benchmark.h"
 
 
 struct Current {
@@ -72,7 +73,21 @@ std::string hash(const std::vector<uint8_t>& data) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc == 2) {
+        std::string filename = argv[1];
+        std::cout << "Rezimas: failo turinio maisa (argumentas)\n";
+        try {
+            std::vector<uint8_t> data = readFile(filename);
+            std::string result = hash(data);
+            std::cout << "Hash: " << result << "\n";
+        } catch (const std::exception& e) {
+            std::cerr << "Klaida: " << e.what() << "\n";
+            return 1;
+        }
+        return 0;
+    }
+
     while (true) {
         int choice;
         
@@ -103,7 +118,8 @@ int main() {
             } catch (const std::exception& e) {
                 std::cerr << "Klaida: " << e.what() << "\n";
             }
-        } else if (choice == 3) break;
+        } else if (choice == 4) timeBenchmark(hash);
+        else if (choice == 3) break;
     }
 
     return 0;
