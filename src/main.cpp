@@ -3,32 +3,28 @@
 #include <fstream>
 #include <array>
 #include <vector>
-#include <iomanip>
 
-struct Pair {
-    uint64_t inputByte;
-    uint64_t convertedByte;
-};
 
 struct Current {
-    std::array<uint64_t, 4> value = {0, 0, 0, 0};
+    std::array<uint64_t, 4> value = {
+        0x0B0B0B0B0B0B0B0BULL,
+        0x0C0C0C0C0C0C0C0CULL,
+        0x0D0D0D0D0D0D0D0DULL,
+        0x0E0E0E0E0E0E0E0EULL
+    };
 };
 
-Current hashBucket(const std::vector<uint8_t>& bucket) {
-    Current currentBucket;
+Current hashBucket(const std::vector<uint8_t>& bucket, Current& startBucket) {
+    Current currentBucket = startBucket;
+    const uint64_t newWeight = 7;
+    const uint64_t oldWeight = 4;
+    const uint64_t totalWeight = newWeight + oldWeight;
+
     for (size_t i = 0; i < bucket.size(); i++) {
-        Pair pair;
-        pair.inputByte = bucket[i];
-        pair.convertedByte = pair.inputByte;
-
-        int part = i % 4;
-        currentBucket.value[part] ^= pair.convertedByte;
-
-        if (i % 2 == 0) {
-            currentBucket.value[part] = (currentBucket.value[part] << 13) | (currentBucket.value[part] >> (64 - 13));
-        } else {
-            currentBucket.value[part] = (currentBucket.value[part] >> 17) | (currentBucket.value[part] << (64 - 17));
-        }
+        int part = (i + bucket[i]) % 4;
+        uint64_t newValue = static_cast<uint64_t>(bucket[i]);
+        uint64_t oldValue = currentBucket.value[part];
+        currentBucket.value[part] = (newValue * newWeight + oldValue * oldWeight) / totalWeight;
     }
     return currentBucket;
 }
@@ -45,7 +41,6 @@ std::vector<uint8_t> readFile(const std::string& filename) {
     while (file.get(c)) {
         data.push_back(static_cast<uint8_t>(c));
     }
-
     return data;
 }
 
@@ -61,11 +56,7 @@ std::string hash(const std::vector<uint8_t>& data) {
     for (size_t i = 0; i < data.size(); i += bucketSize) {
         size_t end = std::min(i + bucketSize, data.size());
         std::vector<uint8_t> bucket( data.begin() + i, data.begin() + end);
-        Current bucketState = hashBucket(bucket);
-
-        for (int j = 0; j < 4; j++) {
-            currentMain.value[j] ^= bucketState.value[j];
-        }
+        currentMain = hashBucket(bucket, currentMain);
     }
 
     std::string result;
@@ -77,7 +68,6 @@ std::string hash(const std::vector<uint8_t>& data) {
             result += hexDigits[(currentMain.value[i] >> shift) & 0xF];
         }
     }
-
     return result;
 }
 
@@ -106,9 +96,13 @@ int main() {
             std::cout << "Iveskite failo pavadinima arba kelia iki jo: ";
             std::getline(std::cin, filename);
 
+            try {
             std::vector<uint8_t> data = readFile(filename);
             std::string result = hash(data);
             std::cout << "Hash: " << result << "\n";
+            } catch (const std::exception& e) {
+                std::cerr << "Klaida: " << e.what() << "\n";
+            }
         } else if (choice == 3) break;
     }
 
