@@ -2,13 +2,14 @@
 
 ## Idėja
 
-Mano hash funkcija naudoja 256 bitų reikšmę, kurią sudaro keturios 64 bitų reikšmės. Pradžioje kiekviena iš jų turi savo pradinę reikšmę
-(skaičius 11, 12, 13 ir 14, užrašytus hex formatu). Įvestis yra padalinama į 8 baitų blokus. Kiekvienas blokas apdorojamas atskirai.
+Mano hash funkcija turi struktūra Current, kurioje yra 4 kintamieji tipo uint64_t, kiekvienas po 64 bitus, kas iš viso išvestyje sudaro 256 bitų reikšmę. Pradžioje kiekviena iš jų turi savo pradinę reikšmę
+(skaičius 11, 12, 13 ir 14, užrašytus hex formatu), todėl nepriklausomai nuo įvesties dydžio, išvestis visada bus gaunama 64 hex simboliu formatu. Įvestis yra padalinama į 8 baitų blokus. Kiekvienas blokas apdorojamas atskirai, kad nereiketu visos įvesties (jei ji yra didelė) apdoroti iš karto, todėl galima dirbti su didesniais failais.
+
 Kiekvienam baitui parenkama viena iš keturių 256 bitų reikšmės dalių. Ji parenkama pagal formulę: (pozicija + baito reikšmė) % 4.
 Tokiu būdu skirtingi baitai gali paveikti skirtingas būsenos dalis. Tada nauja baito reikšmė sujungiama su ankstesne pasirinktos būsenos
 reikšme pagal analogija skaičiavimų, atliekamų finansų rinkose skaičiuojant EMA indikatorių. Naujam baitui suteikiamas didesnis svoris
 negu senai reikšmei. Šį būdą pasirinkau kaip vieną iš savo algoritmo idėjų, tačiau jis turi ir trūkumų, nes aritmetinis vidurkis sumažina
-mažų pokyčių poveikį ir suglotnina maišą, o šiuo atveju reikalinga daugiau chaotiškumo.
+mažų pokyčių poveikį ir suglotnina maišą, o šiuo atveju reikalinga daugiau "triukšmo".
 
 ## Pseudokodas:
 
@@ -60,7 +61,6 @@ Maišos funkcija nenaudoja random, chrono ar kitų bibliotekų, kurios generuoja
 visada duoda tą pačią maišą.
 
 Patikrinta praktiškai:
-![alt text](<Ekrano kopija 2026-09-24 010625.png>)
 
 ## Efektyvumas
 

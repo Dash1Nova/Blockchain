@@ -60,6 +60,12 @@ std::string hash(const std::vector<uint8_t>& data) {
         currentMain = hashBucket(bucket, currentMain);
     }
 
+    uint64_t length = static_cast<uint64_t>(data.size());
+    for (int part = 0; part < 4; part++) {
+        uint64_t oldValue = currentMain.value[part];
+        currentMain.value[part] = (length * 7 + oldValue * 4) / 11;
+    }
+
     std::string result;
     static const char hexDigits[] = "0123456789abcdef";
     result.reserve(64);
@@ -73,21 +79,7 @@ std::string hash(const std::vector<uint8_t>& data) {
 }
 
 
-int main(int argc, char* argv[]) {
-    if (argc == 2) {
-        std::string filename = argv[1];
-        std::cout << "Rezimas: failo turinio maisa (argumentas)\n";
-        try {
-            std::vector<uint8_t> data = readFile(filename);
-            std::string result = hash(data);
-            std::cout << "Hash: " << result << "\n";
-        } catch (const std::exception& e) {
-            std::cerr << "Klaida: " << e.what() << "\n";
-            return 1;
-        }
-        return 0;
-    }
-
+int main() {
     while (true) {
         int choice;
         
@@ -100,6 +92,7 @@ int main(int argc, char* argv[]) {
         std::cin.ignore();
         
         if (choice == 1) {
+            std::cout << "Naudojamas teksto ivesties ranka rezimas\n";
             std::string input;
             std::cout << "Iveskite teksta: ";
             std::getline(std::cin, input);
@@ -108,6 +101,7 @@ int main(int argc, char* argv[]) {
             std::string result = hash(data);
             std::cout << "Hash: " << result << "\n";
         } else if (choice == 2) {
+            std::cout << "Naudojamas skaitymo is failo rezimas\n";
             std::string filename;
             std::cout << "Iveskite failo pavadinima arba kelia iki jo: ";
             std::getline(std::cin, filename);
