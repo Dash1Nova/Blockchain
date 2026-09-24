@@ -7,9 +7,7 @@ Mano hash funkcija turi struktūra Current, kurioje yra 4 kintamieji tipo uint64
 
 Idėja bitų maišymo yra padaryta pagal analogiją su skaičiavimais, naudojamais finansų rinkose, kur skirtingoms reikšmėms gali būti suteikiami skirtingi svoriai (EMA indikatorius). Mano atveju naujai gaunama baito reikšmė turi didesnį svorį negu ankstesnė hash reikšmė.
 
-Kiekvienas bloke esantis baitas pagal savo poziciją yra priskiriamas vienai iš keturių Current dalių. Tam naudoju i % 4. Tai reiškia, kad pirmas baitas keičia pirmą dalį, antras – antrą, trečias – trečią, ketvirtas – ketvirtą, o po to šis ciklas kartojasi. Tokį būdą pasirinkau todėl, kad jis yra paprastas ir leidžia tolygiai paskirstyti įvesties baitus tarp keturių dalių.
-
-Po to paimama esama pasirinktos dalies reikšmė ir naujo baito reikšmė. Joms priskiriami skirtingi svoriai. Naujam baitui suteikiu svorį 7, o senai reikšmei – 4. Taip nauja įvestis turi didesnę įtaką rezultatui, tačiau ankstesnė reikšmė taip pat nėra visiškai prarandama. Šie skaičiai nėra paimti iš standartinės hash funkcijos, o pasirinkti kaip mano algoritmo dalis. Dalinimas iš 11 atliekamas todėl, kad 11 yra abiejų svorių suma: 7 + 4 = 11. Tokiu būdu gaunamas svertinis vidurkis.
+Kiekvienas bloke esantis baitas pagal savo poziciją yra priskiriamas vienai iš keturių Current dalių. Tam naudoju i % 4. Tai reiškia, kad pirmas baitas keičia pirmą dalį, antras – antrą, trečias – trečią, ketvirtas – ketvirtą, o po to šis ciklas kartojasi. Tokį būdą pasirinkau todėl, kad jis yra paprastas ir leidžia tolygiai paskirstyti įvesties baitus tarp keturių dalių. Po to paimama esama pasirinktos dalies reikšmė ir naujo baito reikšmė. Joms priskiriami skirtingi svoriai. Naujam baitui suteikiu svorį 7, o senai reikšmei – 4. Taip nauja įvestis turi didesnę įtaką rezultatui, tačiau ankstesnė reikšmė taip pat nėra visiškai prarandama. Šie skaičiai nėra paimti iš standartinės hash funkcijos, o pasirinkti kaip mano algoritmo dalis. Dalinimas iš 11 atliekamas todėl, kad 11 yra abiejų svorių suma: 7 + 4 = 11. Tokiu būdu gaunamas svertinis vidurkis.
 
 Kadangi naudoju sveikus skaičius dalinimui, gali būti prarandama dalis informacijos dėl apvalinimo žemyn. Tai yra vienas iš mano hash funkcijos trūkumų, kurį vėliau ketinu patikrinti eksperimentiniuose tyrimuose.
 
@@ -76,6 +74,7 @@ Maišos funkcija nenaudoja random, chrono ar kitų bibliotekų, kurios generuoja
 visada duoda tą pačią maišą.
 
 Patikrinta praktiškai:
+<img width="666" height="337" alt="Ekrano kopija 2026-09-24 165126" src="https://github.com/user-attachments/assets/9c0a2618-1ccc-4567-8cef-be7ab11f399b" />
 
 ## Efektyvumas
 
