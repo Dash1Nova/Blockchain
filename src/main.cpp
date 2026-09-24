@@ -22,7 +22,7 @@ Current hashBucket(const std::vector<uint8_t>& bucket, Current& startBucket) {
     const uint64_t totalWeight = newWeight + oldWeight;
 
     for (size_t i = 0; i < bucket.size(); i++) {
-        int part = (i + bucket[i]) % 4;
+        int part = i % 4;
         uint64_t newValue = static_cast<uint64_t>(bucket[i]);
         uint64_t oldValue = currentBucket.value[part];
         currentBucket.value[part] = (newValue * newWeight + oldValue * oldWeight) / totalWeight;
